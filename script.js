@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let winners = [];
     let currentWeightOffset = 0.5;
     let lastRotation = 0;
-    
+
     // Load saved items and settings from localStorage
     function loadSavedData() {
         const savedItems = localStorage.getItem('lotteryItems');
