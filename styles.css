@@ -1,0 +1,160 @@
+body {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.left-panel, .center-panel, .right-panel {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.left-panel {
+    flex: 1;
+}
+
+.center-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.right-panel {
+    flex: 1;
+}
+
+button {
+    background-color: #4a4a4a;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #5a5a5a;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: left;
+    z-index: 1001;
+}
+
+.modal-content label {
+    display: block;
+    margin: 10px 0;
+}
+
+.modal-content input {
+    background-color: #3a3a3a;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    padding: 5px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.modal-content input:focus {
+    outline: 2px solid #5a5a5a;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+#animationArea {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel {
+    width: 100%;
+    height: 100%;
+    transform-origin: center;
+}
+
+.indicator {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 40px;
+    background-color: #ff0000;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.item-entry {
+    background-color: #3a3a3a;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-btn {
+    cursor: pointer;
+    color: #ff5555;
+    font-size: 20px;
+    margin-left: 10px;
+}
+
+.delete-btn:hover {
+    color: #ff8888;
+}
+
+#winners li {
+    background-color: #3a3a3a;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    list-style: none;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+.right-panel label {
+    display: block;
+    margin: 10px 0;
+}
