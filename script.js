@@ -174,6 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
         items.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'item-entry';
+            if (item.color) {
+                div.style.backgroundColor = item.color;
+            }
             const nameSpan = document.createElement('span');
             nameSpan.textContent = `${item.name} (比重: ${item.weight})`;
             const deleteBtn = document.createElement('span');
@@ -217,6 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const startAngle = (currentAngle * Math.PI) / 180;
             const endAngle = ((currentAngle + angle) * Math.PI) / 180;
 
+            // Assign color to item if not already set
+            if (!item.color) {
+                item.color = `hsl(${index * 60}, 70%, 50%)`;
+            }
+
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             const startX = centerX + radius * Math.cos(startAngle);
             const startY = centerY + radius * Math.sin(startAngle);
@@ -225,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const largeArcFlag = angle > 180 ? 1 : 0;
             const d = `M ${centerX},${centerY} L ${startX},${startY} A ${radius},${radius} 0 ${largeArcFlag},1 ${endX},${endY} Z`;
             path.setAttribute('d', d);
-            path.setAttribute('fill', `hsl(${index * 60}, 70%, 50%)`);
+            path.setAttribute('fill', item.color);
             wheel.appendChild(path);
 
             const midAngle = (currentAngle + angle / 2) * (Math.PI / 180);
@@ -247,6 +255,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         wheel.style.transform = `rotate(${lastRotation}deg)`;
+        updateItemList(); // Update item list to reflect colors
+        saveData(); // Save items with colors
     }
 
     updateWheel();
