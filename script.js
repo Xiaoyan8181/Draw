@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentWeightOffset = 0.5;
     let lastRotation = 0;
 
-    // Load saved items and settings from localStorage
+    // 載入儲存的項目和設定
     function loadSavedData() {
         const savedItems = localStorage.getItem('lotteryItems');
         if (savedItems) {
@@ -23,11 +23,48 @@ document.addEventListener('DOMContentLoaded', () => {
         updateWheel();
     }
 
-    // Save items and settings to localStorage
+    // 儲存項目和設定到 localStorage
     function saveData() {
         localStorage.setItem('lotteryItems', JSON.stringify(items));
         localStorage.setItem('noRepeat', JSON.stringify(document.getElementById('noRepeat').checked));
         localStorage.setItem('finitePool', JSON.stringify(document.getElementById('finitePool').checked));
+    }
+
+    // 生成唯一顏色
+    function generateUniqueColor(existingColors, index, totalItems) {
+        // 根據項目數量均勻分佈色相
+        const hue = (360 / Math.max(totalItems, 1)) * index;
+        const candidateColor = `hsl(${hue}, 70%, 50%)`;
+        
+        // 如果顏色未被使用，直接返回
+        if (!existingColors.includes(candidateColor)) {
+            return candidateColor;
+        }
+        
+        // 如果顏色重複，嘗試偏移色相
+        let offset = 30; // 初始偏移30度
+        while (offset < 360) {
+            const newHue = (hue + offset) % 360;
+            const newColor = `hsl(${newHue}, 70%, 50%)`;
+            if (!existingColors.includes(newColor)) {
+                return newColor;
+            }
+            offset += 30; // 每次偏移30度
+        }
+        
+        // 如果仍無法找到唯一顏色，隨機生成
+        const randomHue = Math.floor(Math.random() * 360);
+        return `hsl(${randomHue}, 70%, 50%)`;
+    }
+
+    // 更新所有項目的顏色，確保無重複
+    function updateItemColors() {
+        const existingColors = [];
+        items.forEach((item, index) => {
+            const newColor = generateUniqueColor(existingColors, index, items.length);
+            item.color = newColor;
+            existingColors.push(newColor);
+        });
     }
 
     loadSavedData();
@@ -51,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const weight = parseInt(document.getElementById('itemWeight').value);
         if (name && weight > 0) {
             items.push({ name, weight, originalWeight: weight });
+            updateItemColors(); // 更新所有項目顏色
             updateItemList();
             updateWheel();
             saveData();
@@ -184,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteBtn.textContent = '×';
             deleteBtn.addEventListener('click', () => {
                 items.splice(index, 1);
+                updateItemColors(); // 重新分配顏色
                 updateItemList();
                 updateWheel();
                 saveData();
@@ -209,21 +248,52 @@ document.addEventListener('DOMContentLoaded', () => {
         wheel.innerHTML = '';
         if (items.length === 0) return;
 
-        const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
-        let currentAngle = -90;
         const centerX = 200;
         const centerY = 200;
         const radius = 180;
 
-        [...items].reverse().forEach((item, index) => {
+        if (items.length === 1) {
+            const item = items[0];
+            // 確保單一項目有顏色
+            if (!item.color) {
+                item.color = `hsl(0, 70%, 50%)`; // 預設紅色
+            }
+
+            // 繪製完整的圓形
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', centerX);
+            circle.setAttribute('cy', centerY);
+            circle.setAttribute('r', radius);
+            circle.setAttribute('fill', item.color);
+            wheel.appendChild(circle);
+
+            // 顯示項目名稱
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', centerX);
+            text.setAttribute('y', centerY);
+            text.setAttribute('fill', '#ffffff');
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('dominant-baseline', 'middle');
+            text.setAttribute('font-size', '16');
+            text.textContent = item.name;
+            wheel.appendChild(text);
+
+            wheel.style.transform = `rotate(${lastRotation}deg)`;
+            updateItemList();
+            saveData();
+            return;
+        }
+
+        // 更新顏色以確保唯一性
+        updateItemColors();
+
+        const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+        let currentAngle = -90;
+
+        [...items].reverse().forEach((item) => {
             const angle = (item.weight / totalWeight) * 360;
             const startAngle = (currentAngle * Math.PI) / 180;
             const endAngle = ((currentAngle + angle) * Math.PI) / 180;
-
-            // Assign color to item if not already set
-            if (!item.color) {
-                item.color = `hsl(${index * 60}, 70%, 50%)`;
-            }
 
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             const startX = centerX + radius * Math.cos(startAngle);
@@ -255,8 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         wheel.style.transform = `rotate(${lastRotation}deg)`;
-        updateItemList(); // Update item list to reflect colors
-        saveData(); // Save items with colors
+        updateItemList();
+        saveData();
     }
 
     updateWheel();
