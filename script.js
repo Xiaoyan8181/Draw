@@ -32,27 +32,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 生成唯一顏色
     function generateUniqueColor(existingColors, index, totalItems) {
-        // 根據項目數量均勻分佈色相
         const hue = (360 / Math.max(totalItems, 1)) * index;
         const candidateColor = `hsl(${hue}, 70%, 50%)`;
         
-        // 如果顏色未被使用，直接返回
         if (!existingColors.includes(candidateColor)) {
             return candidateColor;
         }
         
-        // 如果顏色重複，嘗試偏移色相
-        let offset = 30; // 初始偏移30度
+        let offset = 30;
         while (offset < 360) {
             const newHue = (hue + offset) % 360;
             const newColor = `hsl(${newHue}, 70%, 50%)`;
             if (!existingColors.includes(newColor)) {
                 return newColor;
             }
-            offset += 30; // 每次偏移30度
+            offset += 30;
         }
         
-        // 如果仍無法找到唯一顏色，隨機生成
         const randomHue = Math.floor(Math.random() * 360);
         return `hsl(${randomHue}, 70%, 50%)`;
     }
@@ -88,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const weight = parseInt(document.getElementById('itemWeight').value);
         if (name && weight > 0) {
             items.push({ name, weight, originalWeight: weight });
-            updateItemColors(); // 更新所有項目顏色
+            updateItemColors();
             updateItemList();
             updateWheel();
             saveData();
@@ -146,9 +142,13 @@ document.addEventListener('DOMContentLoaded', () => {
             weightCursor = weightEnd;
         }
 
-        const winnerCenterWeight = weightCursor + (winner.weight / 2);
-        const targetAngle = (winnerCenterWeight / totalWeight) * 360;
-        const currentAngle = (currentWeightOffset / totalWeight) * 360;
+        // 將中獎項目的比重平分成多份，隨機選擇一個分段
+        const segmentCount = winner.weight; // 每個分段代表 1 單位比重
+        const randomSegment = Math.floor(Math.random() * segmentCount); // 隨機選擇一個分段 (0 ~ segmentCount-1)
+        const segmentWeight = 1; // 每個分段的比重為 1
+        const segmentCenterWeight = weightCursor + (randomSegment + 0.5) * segmentWeight; // 分段中心點的比重位置
+
+        const targetAngle = (segmentCenterWeight / totalWeight) * 360; // 分段中心點對應的角度
         const spins = 10 * 360;
         const finalAngle = spins + targetAngle;
 
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteBtn.textContent = '×';
             deleteBtn.addEventListener('click', () => {
                 items.splice(index, 1);
-                updateItemColors(); // 重新分配顏色
+                updateItemColors();
                 updateItemList();
                 updateWheel();
                 saveData();
@@ -254,12 +254,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (items.length === 1) {
             const item = items[0];
-            // 確保單一項目有顏色
             if (!item.color) {
-                item.color = `hsl(0, 70%, 50%)`; // 預設紅色
+                item.color = `hsl(0, 70%, 50%)`;
             }
 
-            // 繪製完整的圓形
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             circle.setAttribute('cx', centerX);
             circle.setAttribute('cy', centerY);
@@ -267,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
             circle.setAttribute('fill', item.color);
             wheel.appendChild(circle);
 
-            // 顯示項目名稱
             const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             text.setAttribute('x', centerX);
             text.setAttribute('y', centerY);
@@ -284,7 +281,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 更新顏色以確保唯一性
         updateItemColors();
 
         const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
