@@ -143,16 +143,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 將中獎項目的比重平分成多份，隨機選擇一個分段
-        const segmentCount = winner.weight; // 每個分段代表 1 單位比重
-        const randomSegment = Math.floor(Math.random() * segmentCount); // 隨機選擇一個分段 (0 ~ segmentCount-1)
-        const segmentWeight = 1; // 每個分段的比重為 1
-        const segmentCenterWeight = weightCursor + (randomSegment + 0.5) * segmentWeight; // 分段中心點的比重位置
-
-        const targetAngle = (segmentCenterWeight / totalWeight) * 360; // 分段中心點對應的角度
+        const segmentCount = winner.weight;
+        const randomSegment = Math.floor(Math.random() * segmentCount);
+        const segmentWeight = 1;
+        const segmentCenterWeight = weightCursor + (randomSegment + 0.5) * segmentWeight;
+        const targetAngle = (segmentCenterWeight / totalWeight) * 360;
         const spins = 10 * 360;
         const finalAngle = spins + targetAngle;
 
-        lastRotation = finalAngle % 360;
+        // 保持最終旋轉角度為完整的 finalAngle，避免模 360 造成的跳轉
+        lastRotation = finalAngle;
 
         requestAnimationFrame(() => {
             wheel.style.transition = 'transform 6s cubic-bezier(0.1, 0.9, 0.2, 1)';
@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentWeightOffset = (currentWeightOffset + randomValue) % totalWeight;
 
         setTimeout(() => {
+            // 移除過渡效果，並保持最終角度
             wheel.style.transition = 'none';
             wheel.style.transform = `rotate(${lastRotation}deg)`;
 
