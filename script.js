@@ -42,14 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // 如果顏色重複，嘗試偏移色相
-        let offset = 30; // 初始偏移30度
+        let offset = 20; // 初始偏移20度
         while (offset < 360) {
             const newHue = (hue + offset) % 360;
             const newColor = `hsl(${newHue}, 70%, 50%)`;
             if (!existingColors.includes(newColor)) {
                 return newColor;
             }
-            offset += 30; // 每次偏移30度
+            offset += 20; // 每次偏移20度
         }
         
         // 如果仍無法找到唯一顏色，隨機生成
@@ -149,9 +149,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 將中獎項目的比重平分成多份，隨機選擇一個分段
-        const segmentCount = winner.weight;
+        const segmentCount = winner.weight < 20 ? 20 : winner.weight;
         const randomSegment = Math.floor(Math.random() * segmentCount);
-        const segmentWeight = 1;
+        const segmentWeight = winner.weight < 20 ? winner.weight / 20 : 1;
         const segmentCenterWeight = weightCursor + (randomSegment + 0.5) * segmentWeight;
         const targetAngle = (segmentCenterWeight / totalWeight) * 360;
         const spins = 10 * 360;
