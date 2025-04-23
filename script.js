@@ -32,23 +32,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 生成唯一顏色
     function generateUniqueColor(existingColors, index, totalItems) {
+        // 根據項目數量均勻分佈色相
         const hue = (360 / Math.max(totalItems, 1)) * index;
         const candidateColor = `hsl(${hue}, 70%, 50%)`;
         
+        // 如果顏色未被使用，直接返回
         if (!existingColors.includes(candidateColor)) {
             return candidateColor;
         }
         
-        let offset = 30;
+        // 如果顏色重複，嘗試偏移色相
+        let offset = 30; // 初始偏移30度
         while (offset < 360) {
             const newHue = (hue + offset) % 360;
             const newColor = `hsl(${newHue}, 70%, 50%)`;
             if (!existingColors.includes(newColor)) {
                 return newColor;
             }
-            offset += 30;
+            offset += 30; // 每次偏移30度
         }
         
+        // 如果仍無法找到唯一顏色，隨機生成
         const randomHue = Math.floor(Math.random() * 360);
         return `hsl(${randomHue}, 70%, 50%)`;
     }
@@ -84,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const weight = parseInt(document.getElementById('itemWeight').value);
         if (name && weight > 0) {
             items.push({ name, weight, originalWeight: weight });
-            updateItemColors();
+            updateItemColors(); // 更新所有項目顏色
             updateItemList();
             updateWheel();
             saveData();
@@ -151,8 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const spins = 10 * 360;
         const finalAngle = spins + targetAngle;
 
-        // 保持最終旋轉角度為完整的 finalAngle，避免模 360 造成的跳轉
-        lastRotation = finalAngle;
+        lastRotation = finalAngle % 360;
 
         requestAnimationFrame(() => {
             wheel.style.transition = 'transform 6s cubic-bezier(0.1, 0.9, 0.2, 1)';
@@ -162,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentWeightOffset = (currentWeightOffset + randomValue) % totalWeight;
 
         setTimeout(() => {
-            // 移除過渡效果，並保持最終角度
             wheel.style.transition = 'none';
             wheel.style.transform = `rotate(${lastRotation}deg)`;
 
@@ -223,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteBtn.textContent = '×';
             deleteBtn.addEventListener('click', () => {
                 items.splice(index, 1);
-                updateItemColors();
+                updateItemColors(); // 重新分配顏色
                 updateItemList();
                 updateWheel();
                 saveData();
@@ -255,10 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (items.length === 1) {
             const item = items[0];
+            // 確保單一項目有顏色
             if (!item.color) {
-                item.color = `hsl(0, 70%, 50%)`;
+                item.color = `hsl(0, 70%, 50%)`; // 預設紅色
             }
 
+            // 繪製完整的圓形
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             circle.setAttribute('cx', centerX);
             circle.setAttribute('cy', centerY);
@@ -266,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
             circle.setAttribute('fill', item.color);
             wheel.appendChild(circle);
 
+            // 顯示項目名稱
             const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             text.setAttribute('x', centerX);
             text.setAttribute('y', centerY);
@@ -282,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // 更新顏色以確保唯一性
         updateItemColors();
 
         const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
@@ -303,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
             path.setAttribute('fill', item.color);
             wheel.appendChild(path);
 
-            const midAngle = (currentAngle + angle / 2) * (Math.PI / 180);
+            const midAngle = (currentAngle + angle / 2) * (Math.PI) / 180;
             const textRadius = angle < 30 ? radius * 0.5 : radius * 0.7;
             const textX = centerX + textRadius * Math.cos(midAngle);
             const textY = centerY + textRadius * Math.sin(midAngle);
