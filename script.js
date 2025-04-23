@@ -126,6 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        startDraw.disabled = true;
+
         const wheel = document.querySelector('.wheel');
         wheel.style.transition = 'none';
 
@@ -170,6 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             winners.push(winner.name);
             updateWinnerList();
+
+            startDraw.disabled = false;
 
             if (noRepeat) {
                 winner.weight = 0;
